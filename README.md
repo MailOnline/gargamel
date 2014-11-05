@@ -18,7 +18,7 @@ If you want to generate custom changelog for Release Candidate provide to refs (
 
 On the other hand if you want to generate the latest changelog between the two latest release tags:
 
-    $lein gargamel-lr
+    $ lein gargamel-lr
 
 ## License
 
