@@ -2,26 +2,29 @@
   (:require [clojure.java.shell :as sh]
             [clojure.string :as str]
             [leiningen.core.main :as lm]
-            [stencil.core :as st]))
+            [stencil.core :as st])
+  (:import [java.io File]))
 
 (def ^:dynamic proj-name nil)
+
+(def ^:dynamic target-path nil)
 
 (defn- github-issue-link [proj-name]
   (format "<a href=\"https://github.com/MailOnline/%s/issues/$1\"> #$1</a>" proj-name))
 
-(def github-issue-link-external "<a href=\"https://github.com/$2/issues/$3\">$2: $3</a>")
+(def ^:private github-issue-link-external "<a href=\"https://github.com/$2/issues/$3\">$2: $3</a>")
 
-(def github-issue-regexp-string "#(\\d+)")
+(def ^:private github-issue-regexp-string "#(\\d+)")
 
-(def github-issue-regexp (re-pattern github-issue-regexp-string))
+(def ^:private github-issue-regexp (re-pattern github-issue-regexp-string))
 
-(def github-external-issue-regexp #"(([_\w/-]+)#(\d+))")
+(def ^:private github-external-issue-regexp #"(([_\w/-]+)#(\d+))")
 
-(def jira-issue-link "<a href=\"http://andjira.and.dmgt.net:8080/browse/$1\">$1</a>")
+(def ^:private jira-issue-link "<a href=\"http://andjira.and.dmgt.net:8080/browse/$1\">$1</a>")
 
-(def jira-issue-regex-string "(MOL-\\d+)")
+(def ^:private jira-issue-regex-string "(MOL-\\d+)")
 
-(def jira-issue-regex (re-pattern jira-issue-regex-string))
+(def ^:private jira-issue-regex (re-pattern jira-issue-regex-string))
 
 (defn changelog [from to]
   {:pre [from]}
@@ -43,7 +46,7 @@
        (take 2)
        (reverse)))
 
-(defn render-html-changelog [from to changes]
+(defn- render-html-changelog [from to changes]
   (let [[to-release to-build-num to-time] (str/split to #"-")
         [from-release from-build-num from-time] (str/split from #"-")
         from-params (if (and from-build-num from-time)
@@ -62,7 +65,7 @@
                                         :global {:project-name proj-name}}
                                        from-params to-params))))
 
-(defn issues->links [commit]
+(defn- issues->links [commit]
   (let [i->l (fn [t] (-> t
                          (str/replace github-external-issue-regexp github-issue-link-external)
                          (str/replace github-issue-regexp (github-issue-link proj-name))
@@ -73,7 +76,7 @@
         body (-> commit :body i->l)]
     (assoc commit :linked-body (str/replace body #"\n" "<br/>") :linked-subject subject)))
 
-(defn create-section [commit]
+(defn- create-section [commit]
   (let [subject (:subject commit)
         body (:body commit)
         jira-pattern (re-pattern (format ".*%s.*" jira-issue-regex-string))
@@ -94,20 +97,23 @@
           :default
           :other)))
 
-(defn section-flags [changes]
+(defn- section-flags [changes]
   (-> changes
       (#(if (:business %) (assoc % :business-flag true) %))
       (#(if (:technical %) (assoc % :technical-flag true) %))
       (#(if (:refactor %) (assoc % :refactor-flag true) %))))
 
-(defn create-html-changelog [from to]
+(defn- create-html-changelog [from to]
   (let [to (or to "HEAD")
         changelog (->> to
                        (changelog from)
                        (map issues->links)
                        (group-by create-section)
-                       section-flags)]
-    (spit (format "/tmp/changelog-%s-%s.html" from to) (render-html-changelog from to changelog))))
+                       section-flags)
+        target-dir (File. target-path)]
+    (when-not (.exists target-dir)
+      (.mkdirs target-dir))
+    (spit (format "%s/changelog-%s-%s.html" target-path from to) (render-html-changelog from to changelog))))
 
 (defn gargamel
   "Generates html changelog file between to commits or tags
@@ -116,6 +122,7 @@
   optional. In case it is not provided changelog will be generated between
   from and HEAD."
   [project from & to]
-  (binding [proj-name (:name project)]
+  (binding [proj-name (:name project)
+            target-path (:target-path project)]
     (lm/info (format "Generating changelog for project %s between %s and %s" proj-name from (first to)))
     (create-html-changelog from (first to))))
