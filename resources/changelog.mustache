@@ -1,0 +1,50 @@
+<html>
+  <head>
+  </head>
+  <body>
+    {{^to-build-num}}
+      <h1>Changelog for <a href=\"https://github.com/MailOnline/clj_fe/commits/{{to}}\">{{to}}</a></h1>
+      {{/to-build-num}}
+      {{#to-build-num}}
+        <h1>Changelog for build <a href=\"https://github.com/MailOnline/clj_fe/commits/{{to}}\">{{to-build-num}}</a> created at {{to-time}}</h1>
+        <p>VCS tag: {{to}}
+      {{/to-build-num}}
+      {{^from-build-num}}
+        <h2>Changes since <a href=\"https://github.com/MailOnline/clj_fe/commits/{{from}}\">{{from}}</a></h2>
+        {{/from-build-num}}
+        {{#from-build-num}}
+          <h2>Changes since build <a href=\"https://github.com/MailOnline/clj_fe/commits/{{from}}\">{{from-build-num}}</a> created at {{from-time}}</h2>
+          <p>VCS tag: {{from}}
+        {{/from-build-num}}
+        {{#commits.business-flag}}
+          <h3>Business related changes</h3>
+          <ul>
+            {{#commits.business}}
+              {{> commit}}
+            {{/commits.business}}
+          </ul>
+        {{/commits.business-flag}}
+        {{#commits.technical-flag}}
+          <h3>Internal changes</h3>
+          <ul>
+            {{#commits.technical}}
+              {{> commit}}
+            {{/commits.technical}}
+          </ul>
+        {{/commits.technical-flag}}
+        {{#commits.refactor-flag}}
+          <h3>Refactorings, improvements</h3>
+          <ul>
+            {{#commits.refactor}}
+              {{> commit}}
+            {{/commits.refactor}}
+          </ul>
+        {{/commits.refactor-flag}}
+        <h3>Other changes</h3>
+        <ul>
+          {{#commits.other}}
+            {{> commit}}
+          {{/commits.other}}
+        </ul>
+  </body>
+</html>
