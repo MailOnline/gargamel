@@ -6,7 +6,7 @@ You have all these little blue issues on github, jira and commits running around
 
 ## Usage
 
-FIXME: Use this for user-level plugins:
+Use this for user-level plugins:
 
 Put `[gargamel "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your
 `:user` profile, or if you are on Leiningen 1.x do `lein plugin install
