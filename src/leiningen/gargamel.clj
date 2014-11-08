@@ -1,7 +1,6 @@
 (ns leiningen.gargamel
   (:require [clojure.java.shell :as sh]
             [clojure.string :as str]
-            [leiningen.core.main :as lm]
             [stencil.core :as st])
   (:import [java.io File]))
 
@@ -115,6 +114,12 @@
       (.mkdirs target-dir))
     (spit (format "%s/changelog-%s-%s.html" target-path from to) (render-html-changelog from to changelog))))
 
+(defn gargamel-changelog [project-name path from to]
+  (binding [proj-name project-name
+            target-path path]
+    (println (format "Generating changelog for project %s between %s and %s" proj-name from to))
+    (create-html-changelog from to)))
+
 (defn gargamel
   "Generates html changelog file between to commits or tags
 
@@ -122,7 +127,6 @@
   optional. In case it is not provided changelog will be generated between
   from and HEAD."
   [project from & to]
-  (binding [proj-name (:name project)
-            target-path (:target-path project)]
-    (lm/info (format "Generating changelog for project %s between %s and %s" proj-name from (first to)))
-    (create-html-changelog from (first to))))
+  (let [proj-name (:name project)
+        target-path (:target-path project)]
+    (gargamel-changelog proj-name target-path from (first to))))
