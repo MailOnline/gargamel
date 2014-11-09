@@ -34,17 +34,6 @@
        (map #(zipmap [:hash :commiter :refs :date :subject :body] %))
        (map #(assoc % :hash (apply str (butlast (-> % :hash)))))))
 
-(defn latest-release-from-to []
-  (->> (-> (sh/sh "git" "log" "--date=short" "--format=%h%;%cN;%d;%ad;%s;%b;" "--no-merges" :dir ".")
-           :out
-           (str/split #";"))
-       (partition 6)
-       (map #(nth % 2))
-       (filter #(re-matches #".*release-.*" %))
-       (map #(str/replace % #".*(release-\d+-\d+_\d+).*" "$1"))
-       (take 2)
-       (reverse)))
-
 (defn- render-html-changelog [from to changes]
   (let [[to-release to-build-num to-time] (str/split to #"-")
         [from-release from-build-num from-time] (str/split from #"-")
@@ -80,7 +69,7 @@
         body (:body commit)
         jira-pattern (re-pattern (format ".*%s.*" jira-issue-regex-string))
         github-pattern (re-pattern (format ".*%s.*" github-issue-regexp-string))
-        refactor-pattern #"refactor"]
+        refactor-pattern #".*refactor.*"]
     (cond (or (re-matches jira-pattern subject)
               (re-matches jira-pattern body))
           :business
