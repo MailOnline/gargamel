@@ -10,10 +10,10 @@
         <p>VCS tag: {{to}}
       {{/to-build-num}}
       {{^from-build-num}}
-        <h2>Changes since <a href="https://github.com/MailOnline/clj_fe/commits/{{from}}">{{from}}</a></h2>
+        <h2>Changes since <a href="https://github.com/MailOnline/clj_fe/commits/{{from}}">{{from}}</a> <a href="https://github.com/MailOnline/clj_fe/compare/{{from}}...{{to}}">(diff)</a></h2>
         {{/from-build-num}}
         {{#from-build-num}}
-          <h2>Changes since build <a href="https://github.com/MailOnline/clj_fe/commits/{{from}}">{{from-build-num}}</a> created at {{from-time}}</h2>
+          <h2>Changes since build <a href="https://github.com/MailOnline/clj_fe/commits/{{from}}">{{from-build-num}}</a> created at {{from-time}} <a href="https://github.com/MailOnline/clj_fe/compare/{{from}}...{{to}}">(diff)</a></h2>
           <p>VCS tag: {{from}}
         {{/from-build-num}}
         {{#commits.business-flag}}
