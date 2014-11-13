@@ -25,16 +25,23 @@
 
 (def ^:private jira-issue-regex (re-pattern jira-issue-regex-string))
 
-(defn changelog [from to]
+(def ^:private titles {:business "Business related changes"
+                       :technical "Internal changes"
+                       :refactor "Refactorings, improvements"
+                       :other "Other changes"})
+
+(defn changelog [from to project]
   {:pre [from]}
-  (->> (-> (sh/sh "git" "log" "--date=short" "--format=%h%;%cN;%d;%ad;%s;%b;" "--no-merges" (format "%s..%s" from to) :dir ".")
+  (->> (-> (sh/sh "git" "log" "--date=short" "--format=%h%;%cN;%d;%ad;%s;%b;" "--no-merges" (format "%s..%s" from to) :dir (:dir project))
            :out
            (str/split #";"))
        (partition 6)
        (map #(zipmap [:hash :commiter :refs :date :subject :body] %))
-       (map #(assoc % :hash (apply str (butlast (-> % :hash)))))))
+       (map #(assoc % :hash (apply str (butlast (-> % :hash)))))
+       (map #(update-in % [:hash] str/replace #"\W" ""))
+       (map #(assoc % :project-name (:name project)))))
 
-(defn- render-html-changelog [from to changes]
+(defn render-html-changelog [from to changes]
   (let [[to-release to-build-num to-time] (str/split to #"-")
         [from-release from-build-num from-time] (str/split from #"-")
         from-params (if (and from-build-num from-time)
@@ -48,12 +55,12 @@
                            {:to-release to-release
                             :to-build-num to-build-num
                             :to-time (str/replace to-time #"_" " time: ")})
-                      {:to to})]
-    (st/render-file "changelog" (merge {:commits changes
+                    {:to to})]
+    (st/render-file "changelog" (merge {:sections (vals changes)
                                         :global {:project-name proj-name}}
                                        from-params to-params))))
 
-(defn- issues->links [commit]
+(defn issues->links [commit]
   (let [i->l (fn [t] (-> t
                          (str/replace github-external-issue-regexp github-issue-link-external)
                          (str/replace github-issue-regexp (github-issue-link proj-name))
@@ -85,29 +92,33 @@
           :default
           :other)))
 
-(defn- section-flags [changes]
-  (-> changes
-      (#(if (:business %) (assoc % :business-flag true) %))
-      (#(if (:technical %) (assoc % :technical-flag true) %))
-      (#(if (:refactor %) (assoc % :refactor-flag true) %))))
+(defn- section-titles [changes]
+  (->> (map (fn [[k commits]] [k {:title (get titles k) :commits commits}]) 
+            changes)
+       identity
+       (sort-by #(.indexOf (keys titles) (first %)))
+       (into (array-map))))
 
-(defn- create-html-changelog [from to]
+(defn enrich-changelog [log]
+  (->> log
+       (map issues->links)
+       (group-by create-section)
+       section-titles))
+
+(defn create-html-changelog [changes from to]
   (let [to (or to "HEAD")
-        changelog (->> to
-                       (changelog from)
-                       (map issues->links)
-                       (group-by create-section)
-                       section-flags)
         target-dir (File. target-path)]
     (when-not (.exists target-dir)
       (.mkdirs target-dir))
-    (spit (format "%s/changelog-%s-%s.html" target-path from to) (render-html-changelog from to changelog))))
+    (spit (format "%s/changelog-%s-%s.html" target-path from to) 
+          (render-html-changelog from to changes))))
 
 (defn gargamel-changelog [project-name path from to]
   (binding [proj-name project-name
             target-path path]
-    (println (format "Generating changelog for project %s between %s and %s" proj-name from to))
-    (create-html-changelog from to)))
+    (println (format "Generating changelog for project %s between %s and %s" project-name from to))
+    (create-html-changelog (enrich-changelog (changelog from to {:name project-name :dir "."}))
+                           from to)))
 
 (defn gargamel
   "Generates html changelog file between to commits or tags
@@ -117,5 +128,6 @@
   from and HEAD."
   [project from & to]
   (let [proj-name (:name project)
-        target-path (:target-path project)]
+        target-path (:dir project)]
     (gargamel-changelog proj-name target-path from (first to))))
+

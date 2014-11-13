@@ -2,6 +2,7 @@
   (:gen-class)
   (:require [leiningen.gargamel :as grg]
             [leiningen.gargamel-lr :as grg-lr]
+            [gargamel.bower :as bower]
             [clojure.tools.cli :as cli]
             [clojure.string :as str]))
 
@@ -21,13 +22,15 @@
     :default "HEAD"]
    ["-r" "--latest-release" "Generates release notes for the latest release: between the two latest release tags. Tag format expected to be release-buildnumber-date_time: release-\\d+-\\d+_\\d+"]
    ["-p" "--project-name NAME" "Name of the project"]
-   ["-d" "--target-dir DIR" "Directory to generate create the changelog file in"]
+   ["-d" "--target-dir DIR" "Directory to generate create the changelog file in"
+    :default "."]
    ["-h" "--help"]
+   ["-b" "--bower-dir DIR" ""]
    ["-v" "--verbose"]])
 
 (defn -main [& args]
   (let [opts (cli/parse-opts args cli-options)
-        {:keys [from to latest-release project-name target-dir help verbose]} (:options opts)
+        {:keys [from to latest-release project-name target-dir help bower-dir verbose]} (:options opts)
         from-or-lr (or from latest-release)]
 
     (when help
@@ -38,7 +41,8 @@
       (println (str "   to: " to))
       (println (str "   latest-release: " latest-release))
       (println (str "   project-name: " project-name))
-      (println (str "   target-dir: " target-dir)))
+      (println (str "   target-dir: " target-dir))
+      (println (str "   bower-dir " bower-dir)))
 
     (when (and from latest-release)
       (println "Either provide from and optionally to OR latest-release. Make up your mind!")
@@ -48,10 +52,14 @@
       (println "Please provide FROM or run in latest-release mode")
       (System/exit 1))
 
-    (when from
+    (when (and (not bower-dir) from)
       (grg/gargamel-changelog project-name target-dir from to))
 
-    (when latest-release
-      (grg-lr/gargamel-latest-release-notes project-name target-dir)))
+    (when (and (not bower-dir) latest-release)
+      (grg-lr/gargamel-latest-release-notes project-name target-dir))
+
+    (when (and bower-dir from)
+      (bower/bower-changelog bower-dir target-dir from to)))
+
   (println (first (shuffle gargamel-quotes)))
   (System/exit 0))
