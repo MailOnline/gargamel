@@ -25,10 +25,11 @@
 
 (def ^:private jira-issue-regex (re-pattern jira-issue-regex-string))
 
-(def ^:private titles {:business "Business related changes"
-                       :technical "Internal changes"
-                       :refactor "Refactorings, improvements"
-                       :other "Other changes"})
+(def ^:private title-keys [:other :refactor :technical :business])
+
+(def ^:private title-vals ["Other changes" "Refactorings, improvements" "Internal changes" "Business related changes"])
+
+(def ^:private titles (zipmap title-keys title-vals))
 
 (defn changelog [from to project]
   {:pre [from]}
@@ -93,7 +94,7 @@
           :other)))
 
 (defn- section-titles [changes]
-  (->> (map (fn [[k commits]] [k {:title (get titles k) :commits commits}]) 
+  (->> (map (fn [[k commits]] [k {:title (get titles k) :commits commits}])
             changes)
        identity
        (sort-by #(.indexOf (keys titles) (first %)))
@@ -110,7 +111,7 @@
         target-dir (File. target-path)]
     (when-not (.exists target-dir)
       (.mkdirs target-dir))
-    (spit (format "%s/changelog-%s-%s.html" target-path from to) 
+    (spit (format "%s/changelog-%s-%s.html" target-path from to)
           (render-html-changelog from to changes))))
 
 (defn gargamel-changelog [project-name path from to]
@@ -128,6 +129,5 @@
   from and HEAD."
   [project from & to]
   (let [proj-name (:name project)
-        target-path (:dir project)]
+        target-path (:target-path project)]
     (gargamel-changelog proj-name target-path from (first to))))
-

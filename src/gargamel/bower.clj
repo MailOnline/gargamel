@@ -5,8 +5,7 @@
             [clojure.data :as data]
             [leiningen.gargamel :as grg]
             [clojure.string :as s]
-            [gargamel.git :as git]
-            ))
+            [gargamel.git :as git]))
 
 (defn- config [project-dir & {:keys [rev] :or {rev "HEAD"}}]
   (json/parse-string (:out (sh/sh "git" "show" (str rev ":bower.json" )
@@ -44,11 +43,9 @@
 (defn bower-changelog [source-path target-path from to]
   (binding [grg/proj-name (:name (config source-path))
             grg/target-path target-path]
-    (println (format "Generating changelog for project %s between %s and %s" 
+    (println (format "Generating changelog for project %s between %s and %s"
                      grg/proj-name
                      from to))
-    (grg/create-html-changelog (grg/enrich-changelog 
+    (grg/create-html-changelog (grg/enrich-changelog
                                  (changelog grg/proj-name source-path from to))
                                from to)))
-
-

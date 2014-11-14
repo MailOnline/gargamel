@@ -25,7 +25,7 @@
    ["-d" "--target-dir DIR" "Directory to generate create the changelog file in"
     :default "."]
    ["-h" "--help"]
-   ["-b" "--bower-dir DIR" ""]
+   ["-b" "--bower-dir DIR" "Location of bower components. Changelog for bower compenents added to the changelog if present"]
    ["-v" "--verbose"]])
 
 (defn -main [& args]
