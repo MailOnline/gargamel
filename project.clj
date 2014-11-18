@@ -1,4 +1,4 @@
-(defproject gargamel "0.3.2"
+(defproject gargamel "0.4.0-SNAPSHOT"
   :description "Generates changelog between two git refs."
   :url "https://github.com/MailOnline/gargamel"
   :license {:name "Eclipse Public License"
