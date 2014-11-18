@@ -7,7 +7,7 @@
         tmpdir-name (.getAbsolutePath tmpdir)]
     (when-not (.exists tmpdir) (.isDirectory tmpdir)
       (throw (Exception. "Can't run git on non-existent dir " tmpdir-name)))
-    (sh/sh "git" "clone" repo :dir tmpdir-name)
+    (sh/sh "git" "clone" repo tmpdir-name)
     tmpdir))
 
 (defn remote-url [source-dir]
