@@ -3,9 +3,12 @@
             [clojure.java.shell :as sh]))
 
 (defn checkout-project [mod-name repo]
-  (let [tmp-dir (.getAbsolutePath (util/mk-tmp-dir (name mod-name)))
-        res (sh/sh "git" "clone" repo tmp-dir)]
-    tmp-dir))
+  (let [tmpdir (util/mk-tmp-dir (name mod-name))
+        tmpdir-name (.getAbsolutePath tmpdir)]
+    (when-not (.exists tmpdir) (.isDirectory tmpdir)
+      (throw (Exception. "Can't run git on non-existent dir " tmpdir-name)))
+    (sh/sh "git" "clone" repo :dir tmpdir-name)
+    tmpdir))
 
 (defn remote-url [source-dir]
   (sh/sh "git" "config" "--get" "remote.origin.url" :dir source-dir))

@@ -5,6 +5,7 @@
   (let [basedir (System/getProperty "java.io.tmpdir")
         tmpname (str basedir "/" (rand-int 10000) dirname)
         dir (io/file tmpname)]
-    (.mkdir dir)
+    (when-not (.mkdirs dir)
+      (throw (Exception. "Unable to create dir " tmpname)))
     dir))
 
