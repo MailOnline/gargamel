@@ -25,12 +25,13 @@
    ["-d" "--target-dir DIR" "Directory to generate create the changelog file in"
     :default "."]
    ["-h" "--help"]
-   ["-b" "--bower-dir DIR" "Location of bower components. Changelog for bower compenents added to the changelog if present"]
+   ["-b" "--bower-dir DIR" "Directory where bower.json file is. Changelog for bower compenents added to the changelog if present"]
+   ["-x" "--release-tag-pattern PATTERN" "Overrides default release tag pattern. Escape character classes with double \\, for example \\\\d"]
    ["-v" "--verbose"]])
 
 (defn -main [& args]
   (let [opts (cli/parse-opts args cli-options)
-        {:keys [from to latest-release project-name target-dir help bower-dir verbose]} (:options opts)
+        {:keys [from to latest-release project-name target-dir help bower-dir verbose release-tag-pattern]} (:options opts)
         from-or-lr (or from latest-release)]
 
     (when help
@@ -40,6 +41,7 @@
       (println (str "   from: " from))
       (println (str "   to: " to))
       (println (str "   latest-release: " latest-release))
+      (println (str "   pattern:" release-tag-pattern))
       (println (str "   project-name: " project-name))
       (println (str "   target-dir: " target-dir))
       (println (str "   bower-dir " bower-dir)))
@@ -56,7 +58,7 @@
       (grg/gargamel-changelog project-name target-dir from to))
 
     (when (and (not bower-dir) latest-release)
-      (grg-lr/gargamel-latest-release-notes project-name target-dir))
+      (grg-lr/gargamel-latest-release-notes project-name target-dir release-tag-pattern))
 
     (when (and bower-dir from)
       (bower/bower-changelog bower-dir target-dir from to)))
