@@ -33,7 +33,7 @@
 
 (defn changelog [from to project]
   {:pre [from]}
-  (->> (-> (sh/sh "git" "log" "--date=short" "--format=%h%;%cN;%d;%ad;%s;%b;" "--no-merges" (format "%s..%s" from to) :dir (:dir project))
+  (->> (-> (sh/sh "git" "log" "--date=short" "--format=%h%;%cN;%d;%ad;%s;%b;" (format "%s..%s" from to) :dir (:dir project))
            :out
            (str/split #";"))
        (partition 6)

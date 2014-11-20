@@ -4,7 +4,7 @@
             [clojure.string :as str]))
 
 (defn- latest-release-from-to []
-  (->> (-> (sh/sh "git" "log" "--date=short" "--format=%h%;%cN;%d;%ad;%s;%b;" "--no-merges" :dir ".")
+  (->> (-> (sh/sh "git" "log" "--date=short" "--format=%h%;%cN;%d;%ad;%s;%b;" :dir ".")
            :out
            (str/split #";"))
        (partition 6)
