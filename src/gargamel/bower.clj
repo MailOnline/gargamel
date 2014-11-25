@@ -28,7 +28,8 @@
         deps-after (:dependencies (config project-dir :rev to))
         deps-changed (data/diff deps-before deps-after)
         mods-changed (merge-with merge-versions (first deps-changed) (second deps-changed))
-        changes (grg/changelog from to {:dir project-dir :name (name project-name)})]
+        changes (grg/changelog from to {:dir project-dir :name (name project-name)
+                                        :remote-url (git/remote-url project-dir)})]
     (if mods-changed
       (concat changes
               (flatten
@@ -48,4 +49,4 @@
                      from to))
     (grg/create-html-changelog (grg/enrich-changelog
                                  (changelog grg/proj-name source-path from to))
-                               from to)))
+                               from to source-path)))

@@ -3,17 +3,20 @@
   </head>
   <body>
     {{^to-build-num}}
-      <h1>Changelog for <a href="https://github.com/MailOnline/{{global.project-name}}/commits/{{to}}">{{to}}</a></h1>
+      <h1>Changelog for <a href="{{to-url}}">{{to}}</a></h1>
       {{/to-build-num}}
       {{#to-build-num}}
-        <h1>Changelog for build <a href="https://github.com/MailOnline/{{global.project-name}}/commits/{{to}}">{{to-build-num}}</a> created at {{to-time}}</h1>
+        <h1>Changelog for build <a href="{{to-url}}">{{to-build-num}}</a> created at {{to-time}}</h1>
         <p>VCS tag: {{to}}
       {{/to-build-num}}
       {{^from-build-num}}
-        <h2>Changes since <a href="https://github.com/MailOnline/{{global.project-name}}/commits/{{from}}">{{from}}</a> (<a href="https://github.com/MailOnline/{{global.project-name}}/compare/{{from}}...{{to}}">diff</a>)</h2>
+        <h2>Changes since <a href="{{from-url}}">{{from}}</a> (<a
+	href="{{compare-url}}">diff</a>)</h2>
         {{/from-build-num}}
         {{#from-build-num}}
-          <h2>Changes since build <a href="https://github.com/MailOnline/{{global.project-name}}/commits/{{from}}">{{from-build-num}}</a> created at {{from-time}} (<a href="https://github.com/MailOnline/{{global.project-name}}/compare/{{from}}...{{to}}">diff</a>)</h2>
+          <h2>Changes since build <a
+	  href="{{from-url}}">{{from-build-num}}</a> created at {{from-time}}
+	  (<a href="{{compare-url}}">diff</a>)</h2>
           <p>VCS tag: {{from}}
         {{/from-build-num}}
 	{{#sections}}

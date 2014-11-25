@@ -1,7 +1,8 @@
 (ns leiningen.gargamel
   (:require [clojure.java.shell :as sh]
             [clojure.string :as str]
-            [stencil.core :as st])
+            [stencil.core :as st]
+            [gargamel.git :as git])
   (:import [java.io File]))
 
 (def ^:dynamic proj-name nil)
@@ -40,17 +41,18 @@
        (map #(zipmap [:hash :commiter :refs :date :subject :body] %))
        (map #(assoc % :hash (apply str (butlast (-> % :hash)))))
        (map #(update-in % [:hash] str/replace #"\W" ""))
-       (map #(assoc % :project-name (:name project)))))
+       (map #(assoc % :project-name (:name project)))
+       (map #(assoc % :url (git/commit-url (:dir project) (:name project) (:hash %))))))
 
-(defn render-html-changelog [from to changes]
+(defn render-html-changelog [from to changes source-dir]
   (let [[to-release to-build-num to-time] (str/split to #"-")
         [from-release from-build-num from-time] (str/split from #"-")
         from-params (if (and from-build-num from-time)
                       (merge {:from from}
                              {:from-release from-release
                               :from-build-num from-build-num
-                              :from-time (str/replace from-time #"_" " time: ")})
-                      {:from from})
+                              :from-time (str/replace from-time #"_" " time: ") })
+                      {:from from })
         to-params (if (and to-build-num to-time)
                     (merge {:to to}
                            {:to-release to-release
@@ -58,7 +60,10 @@
                             :to-time (str/replace to-time #"_" " time: ")})
                     {:to to})]
     (st/render-file "changelog" (merge {:sections (vals changes)
-                                        :global {:project-name proj-name}}
+                                        :global {:project-name proj-name}
+                                        :from-url (git/commit-url source-dir proj-name from)
+                                        :to-url (git/commit-url source-dir proj-name to)
+                                        :compare-url (git/compare-url source-dir proj-name from to)}
                                        from-params to-params))))
 
 (defn issues->links [commit]
@@ -106,20 +111,20 @@
        (group-by create-section)
        section-titles))
 
-(defn create-html-changelog [changes from to]
+(defn create-html-changelog [changes from to source-dir]
   (let [to (or to "HEAD")
         target-dir (File. target-path)]
     (when-not (.exists target-dir)
       (.mkdirs target-dir))
     (spit (format "%s/changelog-%s-%s.html" target-path from to)
-          (render-html-changelog from to changes))))
+          (render-html-changelog from to changes source-dir))))
 
 (defn gargamel-changelog [project-name path from to]
   (binding [proj-name project-name
             target-path path]
     (println (format "Generating changelog for project %s between %s and %s" project-name from to))
     (create-html-changelog (enrich-changelog (changelog from to {:name project-name :dir "."}))
-                           from to)))
+                           from to ".")))
 
 (defn gargamel
   "Generates html changelog file between to commits or tags
