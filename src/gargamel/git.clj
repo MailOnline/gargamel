@@ -1,6 +1,6 @@
 (ns gargamel.git
-  (:require [gargamel.util :as util]
-            [clojure.java.shell :as sh]))
+  (:require [clojure.java.shell :as sh]
+            [gargamel.util :as util]))
 
 (defn changelog [from to dir]
   (:out (sh/sh "git" "log" "--date=short" "--format=%h%;%cN;%d;%ad;%s;%b;" (format "%s..%s" from to) :dir dir)))

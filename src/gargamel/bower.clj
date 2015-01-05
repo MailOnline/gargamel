@@ -1,11 +1,11 @@
 (ns gargamel.bower
-  (:require [clojure.java.shell :as sh]
-            [cheshire.core :as json]
-            [clojure.java.io :as io]
-            [clojure.data :as data]
-            [leiningen.gargamel :as grg]
-            [clojure.string :as s]
-            [gargamel.git :as git]))
+  (:require [cheshire.core :as json]
+            [clojure
+             [data :as data]
+             [string :as s]]
+            [clojure.java.shell :as sh]
+            [gargamel.git :as git]
+            [leiningen.gargamel :as grg]))
 
 (defn- config [project-dir & {:keys [rev] :or {rev "HEAD"}}]
   (json/parse-string (:out (sh/sh "git" "show" (str rev ":bower.json" )

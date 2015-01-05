@@ -1,10 +1,10 @@
 (ns gargamel.core
   (:gen-class)
-  (:require [leiningen.gargamel :as grg]
-            [leiningen.gargamel-lr :as grg-lr]
+  (:require [clojure.tools.cli :as cli]
             [gargamel.bower :as bower]
-            [clojure.tools.cli :as cli]
-            [clojure.string :as str]))
+            [leiningen
+             [gargamel :as grg]
+             [gargamel-lr :as grg-lr]]))
 
 (def gargamel-quotes
   ["Son of a smurf!"

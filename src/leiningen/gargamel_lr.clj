@@ -1,7 +1,7 @@
 (ns leiningen.gargamel-lr
   (:require [clojure.java.shell :as sh]
-            [leiningen.gargamel :as gr]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [leiningen.gargamel :as gr]))
 
 (def ^:private default-release-tag-pattern
   "release-\\d+-\\d+_\\d+")

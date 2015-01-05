@@ -1,9 +1,8 @@
 (ns leiningen.gargamel
-  (:require [clojure.java.shell :as sh]
-            [clojure.string :as str]
-            [stencil.core :as st]
-            [gargamel.git :as git])
-  (:import [java.io File]))
+  (:require [clojure.string :as str]
+            [gargamel.git :as git]
+            [stencil.core :as st])
+  (:import java.io.File))
 
 (def ^:dynamic proj-name nil)
 
@@ -35,7 +34,6 @@
 (defn changelog [from to project]
   {:pre [from]}
   (let [raw-changelog (git/changelog from to (:dir project))]
-    (def myrawcl raw-changelog)
     (->> (str/split raw-changelog #";")
          (partition 6)
          (map #(zipmap [:hash :commiter :refs :date :subject :body] %))
