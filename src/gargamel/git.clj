@@ -2,6 +2,9 @@
   (:require [gargamel.util :as util]
             [clojure.java.shell :as sh]))
 
+(defn changelog [from to dir]
+  (:out (sh/sh "git" "log" "--date=short" "--format=%h%;%cN;%d;%ad;%s;%b;" (format "%s..%s" from to) :dir dir)))
+
 (defn real-project-name [pn]
   (if (= pn "electrostatic") "f_electrostatic" pn))
 

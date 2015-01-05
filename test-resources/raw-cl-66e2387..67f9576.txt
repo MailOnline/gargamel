@@ -1,0 +1,107 @@
+67f9576%;Pavel Kogan;;2014-12-31; #290 fix function relying on old parse-int behaviour;;
+a3d5207%;Pavel Kogan;;2014-12-31; #290 change parse-int to fail with nil and fix callers;Change parse-int to return nil on parse failure
+Remove unnecessary tests for nil after parse-int call
+Remove unnecessary call to parse-int
+Handle nils upstream of parse-int
+;
+871030d%;reborg;;2014-12-29;Update README.md;;
+942b0df%;Daniel Zurawski;;2014-12-23;Revert "Intentionally breaking crossover bundle to see if it correctly marks the package job red";This reverts commit 0e9b0272a523aa86ada80dfbad1daf42b6b40708.
+;
+0e9b027%;Daniel Zurawski;;2014-12-23;Intentionally breaking crossover bundle to see if it correctly marks the package job red;;
+f75c95a%;Daniel Zurawski;;2014-12-23;Merge pull request #306 from MailOnline/crossover-tests;Crossover tests for previews (cljsbuild with nodejs to execute the JS functions);
+f852e64%;Aliveni Choppa; (releaseint-5498-20141219_145447);2014-12-18;[MOL-6092] UI fixes;;
+753aacf%;Fraz; (releaseint-5488-20141218_020903);2014-12-18;Fixes time offset in AU;;
+4016811%;Matthew W;;2014-12-17;Merge branch 'master' of github.com:MailOnline/clj_fe;;
+f271eba%;Matthew W;;2014-12-17;Record performance benchmarks for /mobile channels and articles;;
+363ab0c%;Fraz; (releaseint-5486-20141217_025525);2014-12-11;Load ninemsn sooner;http://andjira.and.dmgt.net:8080/browse/MOL-6420
+;
+c7df723%;Fraz;;2014-12-17;Fixes tests;update-modified has moved namespaces
+;
+635ad65%;Fraz;;2014-12-12;flatten parameter lists created by duplicat param names; #307
+;
+8b0a146%;Fraz;;2014-12-16;MOL-6329 some stuff;;
+a49901e%;Fraz;;2014-12-04;adds live commentary mod dates to rss feeds;http://andjira.and.dmgt.net:8080/browse/MOL-6329
+;
+646d75e%;Fraz;;2014-12-04;factor live commentary date modding to own ns;http://andjira.and.dmgt.net:8080/browse/MOL-6329
+;
+ff1fabc%;Fraz;;2014-12-04;update modtime from live commentary on sitemap;http://andjira.and.dmgt.net:8080/browse/MOL-6329
+;
+50f68ea%;Fraz; (releaseint-5482-20141217_003445);2014-12-17;Fixes test;articleText now scanned in filter-images
+;
+ba216a2%;Fraz;;2014-12-08;Order sitemap images as in the article body;http://andjira.and.dmgt.net:8080/browse/MOL-6291
+;
+f2187c9%;reborg;;2014-12-03;#297 fixed video-carousel 500 on wrong item-id;;
+41a2633%;panosalbanis; (releaseint-5479-20141216_104425);2014-12-16;Bumped components version;;
+bd6a6b7%;reborg; (releaseint-5478-20141216_094831);2014-12-16;Revert "Bump version of components to v0.3.20 to included ZK-configurable Amqp";This reverts commit a2456217c6214896b3a0b8314783918688ec8585.
+;
+45733bb%;reborg;;2014-12-16;Reverted to components without es-rest changes;;
+e0b6190%;reborg;;2014-12-16;Revert es-rest for es namespace also;This reverts commit 8e34bd65cc7f8fe1b6e3d9e6181a52680e514205.
+;
+054b4fb%;reborg;;2014-12-16;Revert es-rest all ns but one;This reverts commit a6145e9d623717ce765c613e8b9b8cabd20fa8a0.
+;
+a6145e9%;panosalbanis; (releaseint-5476-20141215_193446);2014-12-15;All name spaces use rest es clients;;
+eb30d1a%;panosalbanis;;2014-12-15;Bumped componenets version;;
+5027f4b%;Matthew W;;2014-12-15;Bump version (fixes to mol-logback and merge with Panos' fixes for ES over HTTP);;
+53c382b%;panosalbanis;;2014-12-15;Bumped components to experiment with REST es client;;
+1dfea89%;panosalbanis;;2014-12-15;Revert "Bumped components version, this one uses REST to talk to ES";This reverts commit 4d0ebe621c5d8b2f9cdbad7942369db078222941.
+;
+c7bd1e1%;panosalbanis;;2014-12-15;Revert "Reverted REST es client";This reverts commit eeeba5239a8b952ea2ce6419b0fa1e675f6b95eb.
+;
+c0948f1%;panosalbanis;;2014-12-15;Revert "Reverted REST for real";This reverts commit 8e34bd65cc7f8fe1b6e3d9e6181a52680e514205.
+;
+8e34bd6%;panosalbanis;;2014-12-15;Reverted REST for real;;
+eeeba52%;panosalbanis;;2014-12-15;Reverted REST es client;;
+4d0ebe6%;panosalbanis;;2014-12-15;Bumped components version, this one uses REST to talk to ES;;
+a245621%;Matthew W;;2014-12-15;Bump version of components to v0.3.20 to included ZK-configurable Amqp logging;;
+c2d5945%;Garazi Gartzia; (releaseint-5464-20141215_153332);2014-12-15;[MOL-6399] Converting <span> content to <p> for mobile feeds;;
+730271d%;Garazi Gartzia;;2014-12-15;[MOL-6347] Included name to the email article;;
+2d5219a%;Garazi Gartzia;;2014-12-15;[MOL-6399] Converting <span> content to <p> for mobile feeds. Just for 2.1 for now.;;
+ba512d2%;Aliveni Choppa;;2014-12-15;[MOL-6385] removed comma;;
+86cf696%;Garazi Gartzia; (releaseint-5460-20141212_160754);2014-12-12;Remove optional message from email article form. gunther release needed;;
+f18248c%;Garazi Gartzia;;2014-12-12;Most viewed videos: put day limit in config #305;;
+7adcd23%;Garazi Gartzia;;2014-12-12;Just remove some duplication I saw;;
+603bac5%;panosalbanis;;2014-12-11;Correct mobile api url in ab tests;;
+6152584%;Garazi Gartzia; (releaseint-5457-20141211_135438);2014-12-10;[MOL-6360] Geo Blocking and Geo Variants for Apps;;
+e1d2577%;Garazi Gartzia;;2014-12-10;[MOL-6360] Geo Blocking and Geo Variants for Apps;;
+c9ae4b4%;Elena Morgan; (releaseint-5456-20141215_094602, release-5456-20141215_152929);2014-12-10;[MOL-6295] Addition of Photo Comparison Slider - ops, log removed;;
+1d5aa39%;Maurizio Lupo;;2014-12-10;new logo for mobile [MOL-6357];;
+3142741%;Aliveni Choppa;;2014-12-09;[MOL-6385] tim accordian template text change;;
+d7faf71%;Aliveni Choppa;;2014-12-09;feedback thankyou page url;;
+e54cb33%;Aliveni Choppa;;2014-12-09;[MOL-6398] changes to stamp duty calculator;;
+a4adda1%;panosalbanis;;2014-12-09;Added mobile settings apis;;
+5ae7f30%;Elena Morgan;;2014-12-09;[MOL-6268] Allow Commercial Partners to be shown on all channels - change request;;
+f895932%;Elena Morgan;;2014-12-09;[MOL-6295] Addition of Photo Comparison Slider;;
+611a0f8%;Daniel Zurawski; (origin/crossover-tests);2014-12-08;Add explanation how to run cljsbuild tests;;
+93033e5%;Daniel Zurawski;;2014-12-08;Merge branch 'master' into crossover-tests;;
+8f928a3%;Daniel Zurawski;;2014-12-08;Rewrite the crossover clojurescript tests to just execute in nodejs and remove dependency on phantomjs - no need to unit tests these previews on the client;;
+67992a4%;Aliveni Choppa;;2014-12-08;[MOL-6092] getting article from context, moving poll image inside page element div;;
+6f65534%;Elena Morgan;;2014-12-08;[MOL-6295] Addition of Photo Comparison Slider - [wip];;
+c368487%;Elena Morgan;;2014-12-08;[MOL-6295] Addition of Photo Comparison Slider - [wip];;
+0d2dbf4%;panosalbanis;;2014-12-08;Added weather home page to ab test routes;;
+10c5858%;Daniel Zurawski;;2014-12-05;Implemented phantomjs tests for the clojurescript bundles for polls and authors;;
+e1e73d7%;Garazi Gartzia; (releaseint-5445-20141205_163023);2014-12-05;NPE when callout title is null.;;
+fab55bb%;Garazi Gartzia; (releaseint-5444-20141205_161705);2014-12-05;Trim callout title, Android dev request;;
+5840107%;PeggsDev;;2014-12-05;Revert "added smart banner to nav";This reverts commit ffce6fde7d472a0a139b1d0466cb211a3d235586.
+;
+ffce6fd%;PeggsDev; (releaseint-5442-20141205_105209);2014-12-05;added smart banner to nav;;
+d9b3f75%;Jason Green; (releaseint-5441-20141208_123134, release-5441-20141211_102915, origin/crossover-authors);2014-12-04;merge from master;;
+f82ba8a%;Jason Green;;2014-12-04;[Jason, Daniel] added to gitignore;;
+5491093%;Jason Green;;2014-12-04;[Jason, Daniel] fixed jimson bug, added tests;;
+635bdc3%;Garazi Gartzia;;2014-12-04;Mobile settings endpoint change. Android dev request.;;
+68a18e1%;Garazi Gartzia;;2014-12-04;Simple change to fix diagnostics.;;
+a00c404%;Jason Green;;2014-12-04;Authors playground;;
+371f63a%;Jason Green;;2014-12-04;[Jason, Daniel] Authors crossover in progress.;;
+fbfbf4f%;PeggsDev; (releaseint-5439-20141204_161232, releaseint-5439-20141204_160917, releaseint-5439-20141204_160003);2014-12-04;fixed smart banner settings escaping issue;;
+e416a76%;Garazi Gartzia;;2014-12-04;Problem emailing articles on TIM;;
+e2f1d05%;Aliveni Choppa;;2014-12-04;#247 added new page to display thankyou message after submitting feedback form;;
+69bd5a0%;PeggsDev; (releaseint-5436-20141203_163253);2014-12-03;cahnged code to parse a zoo keeper setting to electrostatic for the new smart banner ticket #MOL-6112;;
+3a48bcb%;Jason Green;;2014-12-03;[Jason, Daniel] fixed cljscript string format;;
+e27a197%;Aliveni Choppa;;2014-12-03;[MOL-6092] Poll image width;;
+d5e27ee%;Jason Green;;2014-12-03;[Jason] added authors template to js;;
+f1e3e2b%;Aliveni Choppa; (releaseint-5429-20141203_114750);2014-12-03;Fixed sitemap tests;;
+c8c018a%;panosalbanis;;2014-12-03;Added cluster b IPs;;
+fb78218%;Daniel Zurawski;;2014-12-03;Move author.clj to author.cljx;;
+916170e%;Fraz;;2014-12-03;Adds preview image to sitemaps;http://andjira.and.dmgt.net:8080/browse/MOL-6291
+;
+06e04e2%;Aliveni Choppa;;2014-12-02;[MOL-6092] polls border;;
+26668c4%;Aliveni Choppa;;2014-12-02;[MOL-6092] display poll image;;

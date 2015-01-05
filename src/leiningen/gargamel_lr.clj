@@ -19,7 +19,7 @@
 
 (defn gargamel-latest-release-notes [proj-name target-dir rt-pattern]
   (let [rt-pattern (or rt-pattern default-release-tag-pattern)]
-    (apply (partial gr/gargamel-changelog proj-name target-dir) (latest-release-from-to rt-pattern))))
+    (apply (partial gr/gargamel-changelog proj-name target-dir nil) (latest-release-from-to rt-pattern))))
 
 (defn gargamel-lr
   "Generates html changelog file between latest release tags.

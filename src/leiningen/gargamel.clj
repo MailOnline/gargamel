@@ -34,15 +34,15 @@
 
 (defn changelog [from to project]
   {:pre [from]}
-  (->> (-> (sh/sh "git" "log" "--date=short" "--format=%h%;%cN;%d;%ad;%s;%b;" (format "%s..%s" from to) :dir (:dir project))
-           :out
-           (str/split #";"))
-       (partition 6)
-       (map #(zipmap [:hash :commiter :refs :date :subject :body] %))
-       (map #(assoc % :hash (apply str (butlast (-> % :hash)))))
-       (map #(update-in % [:hash] str/replace #"\W" ""))
-       (map #(assoc % :project-name (:name project)))
-       (map #(assoc % :url (git/commit-url (:dir project) (:name project) (:hash %))))))
+  (let [raw-changelog (git/changelog from to (:dir project))]
+    (def myrawcl raw-changelog)
+    (->> (str/split raw-changelog #";")
+         (partition 6)
+         (map #(zipmap [:hash :commiter :refs :date :subject :body] %))
+         (map #(assoc % :hash (apply str (butlast (-> % :hash)))))
+         (map #(update-in % [:hash] str/replace #"\W" ""))
+         (map #(assoc % :project-name (:name project)))
+         (map #(assoc % :url (git/commit-url (:dir project) (:name project) (:hash %)))))))
 
 (defn render-html-changelog [from to changes source-dir]
   (let [[to-release to-build-num to-time] (str/split to #"-")
@@ -119,12 +119,13 @@
     (spit (format "%s/changelog-%s-%s.html" target-path from to)
           (render-html-changelog from to changes source-dir))))
 
-(defn gargamel-changelog [project-name path from to]
+(defn gargamel-changelog [project-name path project-dir from to]
   (binding [proj-name project-name
             target-path path]
-    (println (format "Generating changelog for project %s between %s and %s" project-name from to))
-    (create-html-changelog (enrich-changelog (changelog from to {:name project-name :dir "."}))
-                           from to ".")))
+    (let [proj-dir (or project-dir ".")]
+      (println (format "Generating changelog for project %s between %s and %s" project-name from to))
+      (create-html-changelog (enrich-changelog (changelog from to {:name project-name :dir proj-dir}))
+                             from to proj-dir))))
 
 (defn gargamel
   "Generates html changelog file between to commits or tags
@@ -135,4 +136,4 @@
   [project from & to]
   (let [proj-name (:name project)
         target-path (:target-path project)]
-    (gargamel-changelog proj-name target-path from (first to))))
+    (gargamel-changelog proj-name target-path nil from (first to))))

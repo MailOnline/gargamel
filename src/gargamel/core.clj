@@ -55,7 +55,7 @@
       (System/exit 1))
 
     (when (and (not bower-dir) from)
-      (grg/gargamel-changelog project-name target-dir from to))
+      (grg/gargamel-changelog project-name target-dir nil from to))
 
     (when (and (not bower-dir) latest-release)
       (grg-lr/gargamel-latest-release-notes project-name target-dir release-tag-pattern))

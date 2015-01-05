@@ -7,4 +7,5 @@
                  [org.clojure/tools.cli "0.3.1"]
                  [cheshire "5.3.1"]]
   :profiles {:uberjar {:main gargamel.core
-                       :aot :all}})
+                       :aot :all}
+             :test {:resource-paths ["test-resources"]}})
