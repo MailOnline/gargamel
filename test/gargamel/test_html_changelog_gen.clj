@@ -24,3 +24,20 @@
           assert-changelog (slurp (io/resource "changelog-66e2387-67f9576.html"))]
 
       (is (= assert-changelog changelog) "html output for changelog is not identical"))))
+
+(deftest test-adding-extra-section
+  (intern 'leiningen.gargamel 'project-config
+          {:sections [{:key :refactor :regex ".*refactor.*" :title "Refactorings, improvements"}
+                      {:key :technical :regex ".*#(\\d+).*" :title "Internal changes"}
+                      {:key :business :regex ".*(MOL-\\d+).*" :title  "Business related changes"}
+                      {:key :geo :regex ".*Geo.*" :title  "Geo related changes"}]})
+
+  (let [tmpdir (create-temp-dir "gargamel-test")]
+    (gargamel-changelog "clj_fe" (str tmpdir) "foobardir" "66e2387" "67f9576")
+
+    (let [changelog (slurp (str tmpdir "/changelog-66e2387-67f9576.html"))
+          assert-changelog (slurp (io/resource "changelog-66e2387-67f9576-geosection.html"))]
+
+      (is (= assert-changelog changelog) "html output for changelog is not identical")))
+  ;; tear down
+  (intern 'leiningen.gargamel 'project-config nil))

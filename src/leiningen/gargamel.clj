@@ -1,7 +1,9 @@
 (ns leiningen.gargamel
   (:require [clojure.string :as str]
             [gargamel.git :as git]
-            [stencil.core :as st])
+            [stencil.core :as st]
+            [clojure.java.io :as io]
+            [clojure.edn :as edn])
   (:import java.io.File))
 
 (def ^:dynamic proj-name nil)
@@ -25,11 +27,15 @@
 
 (def ^:private jira-issue-regex (re-pattern jira-issue-regex-string))
 
-(def ^:private title-keys [:other :refactor :technical :business])
+(def ^:private sections-defaults
+  [{:key :refactor :regex ".*refactor.*" :title "Refactorings, improvements"}
+   {:key :technical :regex ".*#(\\d+).*" :title "Internal changes"}
+   {:key :business :regex ".*(MOL-\\d+).*" :title  "Business related changes"}])
 
-(def ^:private title-vals ["Other changes" "Refactorings, improvements" "Internal changes" "Business related changes"])
-
-(def ^:private titles (zipmap title-keys title-vals))
+(def project-config
+  (let [proj-config-name "gargamel.edn"]
+    (when (.exists (io/file proj-config-name))
+      (edn/read-string (slurp proj-config-name)))))
 
 (defn changelog [from to project]
   {:pre [from]}
@@ -76,39 +82,29 @@
         body (-> commit :body i->l)]
     (assoc commit :linked-body (str/replace body #"\n" "<br/>") :linked-subject subject)))
 
-(defn- create-section [commit]
+(defn- create-section [sections-config commit]
   (let [subject (:subject commit)
-        body (:body commit)
-        jira-pattern (re-pattern (format ".*%s.*" jira-issue-regex-string))
-        github-pattern (re-pattern (format ".*%s.*" github-issue-regexp-string))
-        refactor-pattern #".*refactor.*"]
-    (cond (or (re-matches jira-pattern subject)
-              (re-matches jira-pattern body))
-          :business
+        body (:body commit)]
+    (or (->> sections-config
+             reverse
+             (some #(when (or (re-matches (-> % :regex re-pattern) subject)
+                          (re-matches (-> % :regex re-pattern) body)) (:key %))))
+        :other)))
 
-          (or (re-matches github-pattern subject)
-              (re-matches github-pattern body))
-          :technical
-
-          (or (re-matches refactor-pattern subject)
-              (re-matches refactor-pattern body))
-          :refactor
-
-          :default
-          :other)))
-
-(defn- section-titles [changes]
-  (->> (map (fn [[k commits]] [k {:title (get titles k) :commits commits}])
-            changes)
-       identity
-       (sort-by #(.indexOf (keys titles) (first %)))
-       (into (array-map))))
+(defn- section-titles [sections-config changes]
+  (let [titles (zipmap (vec (cons :other (map :key sections-config))) (vec (cons "Other changes" (map :title sections-config))))]
+    (->> changes
+         (map (fn [[k commits]] [k {:title (get titles k) :commits commits}]))
+         identity
+         (sort-by #(.indexOf (keys titles) (first %)))
+         (into (array-map)))))
 
 (defn enrich-changelog [log source-dir]
-  (->> log
-       (map (partial issues->links source-dir))
-       (group-by create-section)
-       section-titles))
+  (let [sections-config (or (:sections project-config) sections-defaults)]
+    (->> log
+         (map (partial issues->links source-dir))
+         (group-by (partial create-section sections-config))
+         ((partial section-titles sections-config)))))
 
 (defn create-html-changelog [changes from to source-dir]
   (let [to (or to "HEAD")
