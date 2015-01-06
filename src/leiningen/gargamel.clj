@@ -8,8 +8,8 @@
 
 (def ^:dynamic target-path nil)
 
-(defn- github-issue-link [proj-name]
-  (format "<a href=\"https://github.com/MailOnline/%s/issues/$1\"> #$1</a>" proj-name))
+(defn- github-issue-link [org-name proj-name]
+  (format "<a href=\"https://github.com/%s/%s/issues/$1\"> #$1</a>" org-name proj-name))
 
 (def ^:private github-issue-link-external "<a href=\"https://github.com/$2/issues/$3\">$2: $3</a>")
 
@@ -64,10 +64,11 @@
                                         :compare-url (git/compare-url source-dir proj-name from to)}
                                        from-params to-params))))
 
-(defn issues->links [commit]
-  (let [i->l (fn [t] (-> t
+(defn issues->links [source-dir commit]
+  (let [org-name (git/org-or-username (git/remote-url source-dir))
+        i->l (fn [t] (-> t
                          (str/replace github-external-issue-regexp github-issue-link-external)
-                         (str/replace github-issue-regexp (github-issue-link proj-name))
+                         (str/replace github-issue-regexp (github-issue-link org-name proj-name))
                          (str/replace jira-issue-regex jira-issue-link)))
         subject (-> commit
                     :subject
@@ -103,9 +104,9 @@
        (sort-by #(.indexOf (keys titles) (first %)))
        (into (array-map))))
 
-(defn enrich-changelog [log]
+(defn enrich-changelog [log source-dir]
   (->> log
-       (map issues->links)
+       (map (partial issues->links source-dir))
        (group-by create-section)
        section-titles))
 
@@ -122,7 +123,7 @@
             target-path path]
     (let [proj-dir (or project-dir ".")]
       (println (format "Generating changelog for project %s between %s and %s" project-name from to))
-      (create-html-changelog (enrich-changelog (changelog from to {:name project-name :dir proj-dir}))
+      (create-html-changelog (enrich-changelog (changelog from to {:name project-name :dir proj-dir}) proj-dir)
                              from to proj-dir))))
 
 (defn gargamel

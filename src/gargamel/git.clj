@@ -1,6 +1,7 @@
 (ns gargamel.git
   (:require [clojure.java.shell :as sh]
-            [gargamel.util :as util]))
+            [gargamel.util :as util]
+            [clojure.string :as str]))
 
 (defn changelog [from to dir]
   (:out (sh/sh "git" "log" "--date=short" "--format=%h%;%cN;%d;%ad;%s;%b;" (format "%s..%s" from to) :dir dir)))
@@ -21,14 +22,26 @@
 
 (def remote-url (memoize remote-url*))
 
+(defn org-or-username
+  "figures out organisation or gitusername based on remote origin url"
+  [rurl]
+  (let [https-prefix "https://"
+        url (if (.startsWith rurl https-prefix)
+              (str/replace rurl (re-pattern https-prefix) "")
+              rurl)]
+    (-> url
+        (str/split #"[:/]")
+        second)))
+
+(defn c-url [source-dir project-name bb-url gh-url & args]
+  (let [project-name (real-project-name project-name)
+        r-url (remote-url source-dir)
+        org-name (org-or-username r-url)
+        url (if (re-find #"bitbucket" r-url) bb-url gh-url)]
+    (apply (partial format url org-name project-name) args)))
+
 (defn commit-url [source-dir project-name hash]
-  (let [project-name (real-project-name project-name)]
-    (if (re-find #"bitbucket" (remote-url source-dir) )
-      (format "https://bitbucket.org/MailOnline/%s/commits/%s" project-name hash)
-      (format "https://github.com/MailOnline/%s/commit/%s" project-name hash))))
+  (c-url source-dir project-name "https://bitbucket.org/%s/%s/commits/%s" "https://github.com/%s/%s/commit/%s" hash))
 
 (defn compare-url [source-dir project-name from to]
-  (let [project-name (real-project-name project-name)]
-    (if (re-find #"bitbucket" (remote-url source-dir))
-      (format "https://bitbucket.org/MailOnline/%s/branches/compare/%s..%s" project-name from to)
-      (format "http://github.com/MailOnline/%s/compare/%s...%s" project-name from to))))
+    (c-url source-dir project-name "https://bitbucket.org/%s/%s/branches/compare/%s..%s" "http://github.com/%s/%s/compare/%s...%s" from to))
