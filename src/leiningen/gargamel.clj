@@ -10,22 +10,10 @@
 
 (def ^:dynamic target-path nil)
 
-(defn- github-issue-link [org-name proj-name]
-  (format "<a href=\"https://github.com/%s/%s/issues/$1\"> #$1</a>" org-name proj-name))
-
-(def ^:private github-issue-link-external "<a href=\"https://github.com/$2/issues/$3\">$2: $3</a>")
-
-(def ^:private github-issue-regexp-string "#(\\d+)")
-
-(def ^:private github-issue-regexp (re-pattern github-issue-regexp-string))
-
-(def ^:private github-external-issue-regexp #"(([_\w/-]+)#(\d+))")
-
-(def ^:private jira-issue-link "<a href=\"http://andjira.and.dmgt.net:8080/browse/$1\">$1</a>")
-
-(def ^:private jira-issue-regex-string "(MOL-\\d+)")
-
-(def ^:private jira-issue-regex (re-pattern jira-issue-regex-string))
+(def ^:private linkable-objects-defaults
+  [{:template "<a href=\"https://github.com/%1$s/%2$s/issues/$1\"> #$1</a>" :regex "#(\\d+)"}
+   {:template "<a href=\"https://github.com/$2/issues/$3\">$2: $3</a>" :regex "(([_\\w/-]+)#(\\d+))"}
+   {:template "<a href=\"http://andjira.and.dmgt.net:8080/browse/$1\">$1</a>" :regex "(MOL-\\d+)"}])
 
 (def ^:private sections-defaults
   [{:key :refactor :regex ".*refactor.*" :title "Refactorings, improvements"}
@@ -72,10 +60,8 @@
 
 (defn issues->links [source-dir commit]
   (let [org-name (git/org-or-username (git/remote-url source-dir))
-        i->l (fn [t] (-> t
-                         (str/replace github-external-issue-regexp github-issue-link-external)
-                         (str/replace github-issue-regexp (github-issue-link org-name proj-name))
-                         (str/replace jira-issue-regex jira-issue-link)))
+        linkable-objects (or (:linkable-objects project-config) linkable-objects-defaults)
+        i->l (fn [t] (reduce #(str/replace %1 (-> %2 :regex re-pattern) (-> %2 :template (format org-name proj-name))) t linkable-objects))
         subject (-> commit
                     :subject
                     i->l)
