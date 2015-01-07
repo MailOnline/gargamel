@@ -52,7 +52,8 @@
            [{:template "<a href=\"https://github.com/%1$s/%2$s/issues/$1\"> #$1</a>" :regex "#(\\d+)"}
             {:template "<a href=\"https://github.com/$2/issues/$3\">$2: $3</a>" :regex "(([_\\w/-]+)#(\\d+))"}
             {:template "<a href=\"http://andjira.and.dmgt.net:8080/browse/$1\">$1</a>" :regex "(MOL-\\d+)"}
-            {:template "<a href=\"https://github.com/%1$s/%2$s/blob/master/README.md\">README</a>" :regex "README"}]})
+            {:template "<a href=\"https://github.com/%1$s/%2$s/blob/master/README.md\">README</a>" :regex "README"}
+            {:template "<br/>" :regex "(\\n)"}]})
 
   (let [tmpdir (create-temp-dir "gargamel-test")]
     (gargamel-changelog "clj_fe" (str tmpdir) "foobardir" "66e2387" "67f9576")

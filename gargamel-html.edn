@@ -1,0 +1,22 @@
+{:sections
+ ;; defines sections in the changelog
+ ;;  key: identifier for the section
+ ;;  regex: to select changes for a section
+ ;;  title: title for the section
+ ;;
+ ;; later section definition has precedence over previous ones
+ [{:key :fixes :regex ".*#\\d+.*" :title "New features, bugfixes"}
+  {:key :wip :regex ".*\\[[Ww][iI][pP]\\].*" :title  "Work in progress, not yet ready"}]
+ :linkable-objects
+ ;; defines custom transformations on text chunks, can be used for links in the changelog (commit hashes are turned into links automatically)
+ ;; template: the template fragment to use
+ ;; regex: to select bits of text to be transformed
+ ;;
+ ;; all selected text fragments are run through a format string with two arguments:
+ ;; first is org/user name second is project name. See the %1$s style place holders.
+ ;; for more info on format string see: http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html
+ ;; After that the regex groups are replaced
+ [{:template "<a href=\"https://github.com/%1$s/%2$s/issues/$1\"> #$1</a>" :regex "#(\\d+)"}
+  {:template "<a href=\"https://github.com/$2/issues/$3\">$2: $3</a>" :regex "(([_\\w/-]+)#(\\d+))"}
+  {:template "<span style=\"color: red; font-weight: bold;\">$1</span>" :regex "(\\[refactor\\])"}
+  {:template "<br/>" :regex "(\\n)"}]}

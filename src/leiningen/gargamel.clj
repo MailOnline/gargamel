@@ -14,7 +14,8 @@
 (def ^:private linkable-objects-defaults
   [{:template "<a href=\"https://github.com/%1$s/%2$s/issues/$1\"> #$1</a>" :regex "#(\\d+)"}
    {:template "<a href=\"https://github.com/$2/issues/$3\">$2: $3</a>" :regex "(([_\\w/-]+)#(\\d+))"}
-   {:template "<a href=\"http://andjira.and.dmgt.net:8080/browse/$1\">$1</a>" :regex "(MOL-\\d+)"}])
+   {:template "<a href=\"http://andjira.and.dmgt.net:8080/browse/$1\">$1</a>" :regex "(MOL-\\d+)"}
+   {:template "<br/>" :regex "(\\n)"}])
 
 (def ^:private sections-defaults
   [{:key :refactor :regex ".*refactor.*" :title "Refactorings, improvements"}
@@ -67,7 +68,7 @@
                     :subject
                     i->l)
         body (-> commit :body i->l)]
-    (assoc commit :linked-body (str/replace body #"\n" "<br/>") :linked-subject subject)))
+    (assoc commit :linked-body body :linked-subject subject)))
 
 (defn- create-section [sections-config commit]
   (let [subject (:subject commit)
