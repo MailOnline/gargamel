@@ -3,7 +3,8 @@
             [gargamel.git :as git]
             [stencil.core :as st]
             [clojure.java.io :as io]
-            [clojure.edn :as edn])
+            [clojure.edn :as edn]
+            [stencil.loader :as stl])
   (:import java.io.File))
 
 (def ^:dynamic proj-name nil)
@@ -104,6 +105,13 @@
   (binding [proj-name project-name
             target-path path]
     (let [proj-dir (or project-dir ".")]
+      (when-let [template-dir (-> project-config :template-dir io/file)]
+        (when (.exists template-dir)
+          (doseq [template-file (->> (file-seq template-dir)
+                                     (filter #(and (.isFile %) (.endsWith (.getName %) ".mustache")))
+                                     (map #(.getCanonicalFile %)))]
+
+            (stl/register-template (str/replace (.getName template-file)  #"(.*)\..*" "$1") (slurp template-file)))))
       (println (format "Generating changelog for project %s between %s and %s" project-name from to))
       (create-html-changelog (enrich-changelog (changelog from to {:name project-name :dir proj-dir}) proj-dir)
                              from to proj-dir))))
