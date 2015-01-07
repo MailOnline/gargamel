@@ -95,11 +95,13 @@
 
 (defn create-html-changelog [changes from to source-dir]
   (let [to (or to "HEAD")
-        target-dir (File. target-path)]
+        target-dir (File. target-path)
+        extension (or (:output-extension project-config) ".html")
+        filepath (format "%s/changelog-%s-%s%s" target-path from to extension)]
     (when-not (.exists target-dir)
       (.mkdirs target-dir))
-    (spit (format "%s/changelog-%s-%s.html" target-path from to)
-          (render-html-changelog from to changes source-dir))))
+    (println "writing changelog file: " filepath)
+    (spit filepath (render-html-changelog from to changes source-dir))))
 
 (defn gargamel-changelog [project-name path project-dir from to]
   (binding [proj-name project-name
