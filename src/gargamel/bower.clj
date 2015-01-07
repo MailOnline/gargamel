@@ -47,6 +47,5 @@
     (println (format "Generating changelog for project %s between %s and %s"
                      grg/proj-name
                      from to))
-    (grg/create-html-changelog (grg/enrich-changelog
-                                 (changelog grg/proj-name source-path from to))
+    (grg/create-html-changelog (grg/enrich-changelog (changelog grg/proj-name source-path from to) source-path)
                                from to source-path)))
