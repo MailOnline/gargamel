@@ -48,7 +48,7 @@
                       {:key :technical :regex ".*#(\\d+).*" :title "Internal changes"}
                       {:key :business :regex ".*(MOL-\\d+).*" :title  "Business related changes"}
                       {:key :geo :regex ".*Geo.*" :title  "Geo related changes"}]
-           :linkable-objects
+           :formattable-objects
            [{:template "<a href=\"https://github.com/%1$s/%2$s/issues/$1\"> #$1</a>" :regex "#(\\d+)"}
             {:template "<a href=\"https://github.com/$2/issues/$3\">$2: $3</a>" :regex "(([_\\w/-]+)#(\\d+))"}
             {:template "<a href=\"http://andjira.and.dmgt.net:8080/browse/$1\">$1</a>" :regex "(MOL-\\d+)"}

@@ -11,7 +11,7 @@
 
 (def ^:dynamic target-path nil)
 
-(def ^:private linkable-objects-defaults
+(def ^:private formattable-objects-defaults
   [{:template "<a href=\"https://github.com/%1$s/%2$s/issues/$1\"> #$1</a>" :regex "#(\\d+)"}
    {:template "<a href=\"https://github.com/$2/issues/$3\">$2: $3</a>" :regex "(([_\\w/-]+)#(\\d+))"}
    {:template "<a href=\"http://andjira.and.dmgt.net:8080/browse/$1\">$1</a>" :regex "(MOL-\\d+)"}
@@ -62,8 +62,8 @@
 
 (defn issues->links [source-dir commit]
   (let [org-name (git/org-or-username (git/remote-url source-dir))
-        linkable-objects (or (:linkable-objects project-config) linkable-objects-defaults)
-        i->l (fn [t] (reduce #(str/replace %1 (-> %2 :regex re-pattern) (-> %2 :template (format org-name proj-name))) t linkable-objects))
+        formattable-objects (or (:formattable-objects project-config) formattable-objects-defaults)
+        i->l (fn [t] (reduce #(str/replace %1 (-> %2 :regex re-pattern) (-> %2 :template (format org-name proj-name))) t formattable-objects))
         subject (-> commit
                     :subject
                     i->l)
