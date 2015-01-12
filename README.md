@@ -52,13 +52,15 @@ Please see example config files:
 - [config file](gargamel.edn) for markdown output, please see **comments** in this file explaining the config file format
 - [config file](gargamel-html.edn) for html output
 
-## Change log templates
+Other output formats are supported by the appropriate set of templates and setting the `:output-extension` in `gargamel.edn` to the appropriate extension.
 
-[Mustache](http://mustache.github.io/) templates are used to generate changelog or release notes with Gargamel. Plase see example mustache templates
+## Changelog templates
+
+[Mustache](http://mustache.github.io/) templates are used to generate changelog or release notes with Gargamel. Please see example mustache templates
 - for [html output](resources),
 - for [markdown output](md-templates).
 
-You can use your own custom templates by providing a path to a directory in `gargamel.edn` config file using the `:template-dir` key. Gargamel expects a `changelog.mustache` file as the main template: it can then include other mustache templates mustache style: `{{> other_template}}.
+You can use your own custom templates by providing a path to a directory in `gargamel.edn` config file using the `:template-dir` key. Gargamel expects a `changelog.mustache` file as the main template: it can then include other mustache templates mustache style: `{{> other_template}}`.
 
 Please see expected placeholders in the html output template files [here](resources).
 
