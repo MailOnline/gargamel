@@ -1,3 +1,14 @@
 <li><a href="{{url}}">{{hash}}</a> (<em>{{project-name}}</em>) {{date}} [{{commiter}}]  <strong>{{{linked-subject}}}</strong>
 <p>{{{linked-body}}}
 </li>
+{{!
+- hash: commit hash
+- url: genearted commit url
+- project-name: name of the project (useful if you are using bower components)
+- date: date of the commit
+- commiter: commiter
+- subject: subject line of commit message
+- linked-subject: subject with formattable objects processed
+- body: body of the commit message
+- linked-body: body with formattable objects processed
+}}

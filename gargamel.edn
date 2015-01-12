@@ -8,7 +8,7 @@
  [{:key :fixes :regex ".*#\\d+.*" :title "New features, bugfixes"}
   {:key :wip :regex ".*\\[[Ww][iI][pP]\\].*" :title  "Work in progress, not yet ready"}]
  :formattable-objects
- ;; defines custom transformations on text chunks, can be used for links in the changelog (commit hashes are turned into links automatically)
+ ;; defines custom transformations on text chunks, can be used for links in the changelog (commit hashes are turned into links automatically) for example
  ;; template: the template fragment to use
  ;; regex: to select bits of text to be transformed
  ;;
