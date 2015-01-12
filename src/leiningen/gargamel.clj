@@ -38,7 +38,7 @@
          (map #(assoc % :project-name (:name project)))
          (map #(assoc % :url (git/commit-url (:dir project) (:name project) (:hash %)))))))
 
-(defn render-html-changelog [from to changes source-dir]
+(defn- render-changelog [from to changes source-dir]
   (let [[to-release to-build-num to-time] (str/split to #"-")
         [from-release from-build-num from-time] (str/split from #"-")
         from-params (if (and from-build-num from-time)
@@ -94,7 +94,7 @@
          (group-by (partial create-section sections-config))
          ((partial section-titles sections-config)))))
 
-(defn create-html-changelog [changes from to source-dir]
+(defn create-changelog [changes from to source-dir]
   (let [to (or to "HEAD")
         target-dir (File. target-path)
         extension (or (:output-extension project-config) ".html")
@@ -102,7 +102,7 @@
     (when-not (.exists target-dir)
       (.mkdirs target-dir))
     (println "writing changelog file: " filepath)
-    (spit filepath (render-html-changelog from to changes source-dir))))
+    (spit filepath (render-changelog from to changes source-dir))))
 
 (defn gargamel-changelog [project-name path project-dir from to]
   (binding [proj-name project-name
@@ -116,7 +116,7 @@
 
             (stl/register-template (str/replace (.getName template-file)  #"(.*)\..*" "$1") (slurp template-file)))))
       (println (format "Generating changelog for project %s between %s and %s" project-name from to))
-      (create-html-changelog (enrich-changelog (changelog from to {:name project-name :dir proj-dir}) proj-dir)
+      (create-changelog (enrich-changelog (changelog from to {:name project-name :dir proj-dir}) proj-dir)
                              from to proj-dir))))
 
 (defn gargamel
