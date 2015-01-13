@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/MailOnline/gargamel.png?branch=master)](https://travis-ci.org/MailOnline/gargamel)
+
 # gargamel
 
 You have all these little blue issues on github, jira and commits running around and you want to catch them! Gargamel is really enthusiastic to do just that but he never really succeeds, does he?
@@ -7,8 +9,6 @@ You have all these little blue issues on github, jira and commits running around
 ## Usage
 
 There are two interfaces for gargamel: either use the lein plugin for clojure projects managed by leiningen or use the CLI interface for all other projects.
-
-Note that currently gargamel expects release tags in the following format: `release-buildnumber-date_time` matching the pattern `release-\d+-\d+_\d+`.
 
 ### Prerequisites
 
@@ -36,20 +36,22 @@ To install clone the github project and put gargamel/bin on your PATH. Run
 
     $ gargamel.sh -h
 
-for built in help. You can generate custom changelog for Release Candidate provide two refs (tags or commits):
+help. You can generate custom changelog for Release Candidate providing two refs (tags or commits):
 
     $ gargamel.sh -f 4adf1fe853d9c082346cd4b029f1c868abb9d663 -t 50848867e66d6462c3af7427dbdf54f6553d12c0 -p clj_fe -d /tmp/
 
-Or to generate the latest releaase notes changelog between the two latest releaase tags:
+Or to generate the latest release notes changelog between the two latest release tags:
 
     $ gargamel.sh -v -r -p clj_fe -d /tmp/
 
+Note that by default gargamel expects release tags in the following format: `release-buildnumber-date_time` matching the pattern `release-\d+-\d+_\d+`. This is however configurable with `-x` or `--releate-tag-pattern`
+
 ## Project specific config file
 
-Gargamel looks for a file named `gargamel.edn` in the project's directory. This file should be in [edn format](https://github.com/edn-format/edn).
+Gargamel looks for a file named `gargamel.edn` in the project's directory. This file needs to be in [edn format](https://github.com/edn-format/edn).
 
 Please see example config files:
-- [config file](gargamel.edn) for markdown output, please see **comments** in this file explaining the config file format
+- [config file](gargamel.edn) for markdown output, please see **comments** for explanation of the config file format
 - [config file](gargamel-html.edn) for html output
 
 Other output formats are supported by the appropriate set of templates and setting the `:output-extension` in `gargamel.edn` to the appropriate extension.
