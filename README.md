@@ -18,9 +18,9 @@ Gargamel also does not handle login/auth to github/bitbucket it just shells out 
 
 ### Leiningen plugin
 
-Put `[gargamel "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your
+Put `[gargamel "0.5.0"]` into the `:plugins` vector of your
 `:user` profile, or if you are on Leiningen 1.x do `lein plugin install
-gargamel 0.1.0-SNAPSHOT`.
+gargamel 0.5.0`.
 
 If you want to generate custom changelog for Release Candidate provide two refs (commits or tags) on the command line:
 
@@ -32,11 +32,11 @@ On the other hand if you want to generate the latest changelog between the two l
 
 ### CLI interface
 
-To install clone the github project and put gargamel/bin on your PATH. Run
+Download `gargamel-latest.tgz` binary from [latest release](https://github.com/MailOnline/gargamel/releases/latest) and untar it in a directory on your PATH. Run
 
     $ gargamel.sh -h
 
-help. You can generate custom changelog for Release Candidate providing two refs (tags or commits):
+for help. You can generate custom changelog for Release Candidate providing two refs (tags or commits):
 
     $ gargamel.sh -f 4adf1fe853d9c082346cd4b029f1c868abb9d663 -t 50848867e66d6462c3af7427dbdf54f6553d12c0 -p clj_fe -d /tmp/
 
@@ -55,6 +55,8 @@ Please see example config files:
 - [config file](gargamel-html.edn) for html output
 
 Other output formats are supported by the appropriate set of templates and setting the `:output-extension` in `gargamel.edn` to the appropriate extension.
+
+For example markdown output see gargamel's own release notes since [0.5.0 release](https://github.com/MailOnline/gargamel/releases/tag/release-050-20150113_1225).
 
 ## Changelog templates
 
