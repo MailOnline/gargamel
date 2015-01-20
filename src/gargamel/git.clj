@@ -22,6 +22,15 @@
 
 (def remote-url (memoize remote-url*))
 
+(defn project-name
+  "figures out project name based on remote origin url"
+  [rurl]
+  (-> rurl
+      (str/split #"/")
+      last
+      (str/replace ".git" "")
+      str/trim))
+
 (defn org-or-username
   "figures out organisation or gitusername based on remote origin url"
   [rurl]

@@ -105,9 +105,9 @@
     (spit filepath (render-changelog from to changes source-dir))))
 
 (defn gargamel-changelog [project-name path project-dir from to]
-  (binding [proj-name project-name
-            target-path path]
-    (let [proj-dir (or project-dir ".")]
+  (let [proj-dir (or project-dir ".")]
+    (binding [proj-name (or project-name (git/project-name (git/remote-url proj-dir)))
+              target-path path]
       (when-let [template-dir (-> project-config :template-dir io/file)]
         (when (.exists template-dir)
           (doseq [template-file (->> (file-seq template-dir)
@@ -115,9 +115,9 @@
                                      (map #(.getCanonicalFile %)))]
 
             (stl/register-template (str/replace (.getName template-file)  #"(.*)\..*" "$1") (slurp template-file)))))
-      (println (format "Generating changelog for project %s between %s and %s" project-name from to))
-      (create-changelog (enrich-changelog (changelog from to {:name project-name :dir proj-dir}) proj-dir)
-                             from to proj-dir))))
+      (println (format "Generating changelog for project %s between %s and %s" proj-name from to))
+      (create-changelog (enrich-changelog (changelog from to {:name proj-name :dir proj-dir}) proj-dir)
+                        from to proj-dir))))
 
 (defn gargamel
   "Generates html changelog file between to commits or tags
