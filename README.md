@@ -38,11 +38,11 @@ Download `gargamel-latest.tgz` binary from [latest release](https://github.com/M
 
 for help. You can generate custom changelog for Release Candidate providing two refs (tags or commits):
 
-    $ gargamel.sh -f 4adf1fe853d9c082346cd4b029f1c868abb9d663 -t 50848867e66d6462c3af7427dbdf54f6553d12c0 -p clj_fe -d /tmp/
+    $ gargamel.sh -f 4adf1fe853d9c082346cd4b029f1c868abb9d663 -t 50848867e66d6462c3af7427dbdf54f6553d12c0 -d /tmp/
 
 Or to generate the latest release notes changelog between the two latest release tags:
 
-    $ gargamel.sh -v -r -p clj_fe -d /tmp/
+    $ gargamel.sh -v -r -d /tmp/
 
 Note that by default gargamel expects release tags in the following format: `release-buildnumber-date_time` matching the pattern `release-\d+-\d+_\d+`. This is however configurable with `-x` or `--releate-tag-pattern`
 
