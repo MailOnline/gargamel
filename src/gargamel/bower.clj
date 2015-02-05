@@ -2,7 +2,8 @@
   (:require [cheshire.core :as json]
             [clojure
              [data :as data]
-             [string :as s]]
+             [string :as s]
+             [set :refer [union]]]
             [clojure.java.shell :as sh]
             [gargamel.git :as git]
             [leiningen.gargamel :as grg]))
@@ -23,23 +24,27 @@
 
 
 (defn changelog
-  [project-name project-dir from to]
-  (let [deps-before (:dependencies (config project-dir :rev from))
-        deps-after (:dependencies (config project-dir :rev to))
-        deps-changed (data/diff deps-before deps-after)
-        mods-changed (merge-with merge-versions (first deps-changed) (second deps-changed))
-        changes (grg/changelog from to {:dir project-dir :name (name project-name)
-                                        :remote-url (git/remote-url project-dir)})]
-    (if mods-changed
-      (concat changes
-              (flatten
-                (doall
-                  (for [[mod-name [mod-old-version mod-new-version]] mods-changed
-                        :let [repo (lookup-module project-dir mod-name)
-                              mod-dir (git/checkout-project mod-name repo)]]
-                    (binding [grg/proj-name mod-name]
-                      (changelog mod-name mod-dir mod-old-version mod-new-version))))))
-      changes)))
+  ([project-name project-dir from to]
+   (changelog project-name project-dir from to (atom #{})))
+  ([project-name project-dir from to mods-seen]
+   (swap! mods-seen conj project-name)
+   (let [deps-before (:dependencies (config project-dir :rev from))
+         deps-after (:dependencies (config project-dir :rev to))
+         deps-changed (data/diff deps-before deps-after)
+         mods-changed (merge-with merge-versions (first deps-changed) (second deps-changed))
+         mods-pending (remove #(@mods-seen (key %)) mods-changed)
+         changes (grg/changelog from to {:dir project-dir :name (name project-name)
+                                         :remote-url (git/remote-url project-dir)})]
+     (if mods-changed
+       (concat changes
+               (flatten
+                 (doall
+                   (for [[mod-name [mod-old-version mod-new-version]] mods-pending
+                         :let [repo (lookup-module project-dir mod-name)
+                               mod-dir (git/checkout-project mod-name repo)]]
+                     (binding [grg/proj-name mod-name]
+                       (changelog mod-name mod-dir mod-old-version mod-new-version mods-seen))))))
+       changes))))
 
 (defn bower-changelog [source-path target-path from to]
   (binding [grg/proj-name (:name (config source-path))
