@@ -17,6 +17,7 @@
 
 (def cli-options
   [
+   [nil "--bower-include-regex REGEX" "A regex of what bower modules to include" :default "."]
    ["-f" "--from FROM" "From ref (either commit hash or tag)"]
    ["-t" "--to TO" "To ref (either commit hash or tag). If empty defaults to HEAD."
     :default "HEAD"]
@@ -31,7 +32,7 @@
 
 (defn -main [& args]
   (let [opts (cli/parse-opts args cli-options)
-        {:keys [from to latest-release project-name target-dir help bower-dir verbose release-tag-pattern]} (:options opts)
+        {:keys [from to latest-release project-name target-dir help bower-dir verbose release-tag-pattern bower-include-regex]} (:options opts)
         from-or-lr (or from latest-release)]
 
     (when help
@@ -44,7 +45,9 @@
       (println (str "   pattern:" release-tag-pattern))
       (println (str "   project-name: " project-name))
       (println (str "   target-dir: " target-dir))
-      (println (str "   bower-dir " bower-dir)))
+      (println (str "   bower-dir " bower-dir))
+      (println (str "   bower-include-regex " bower-include-regex))
+      )
 
     (when (and from latest-release)
       (println "Either provide from and optionally to OR latest-release. Make up your mind!")
@@ -61,7 +64,9 @@
       (grg-lr/gargamel-latest-release-notes project-name target-dir release-tag-pattern))
 
     (when (and bower-dir from)
-      (bower/bower-changelog bower-dir target-dir from to)))
+      (bower/bower-changelog bower-dir target-dir from to 
+                             :include-regex (re-pattern bower-include-regex)))
+    )
 
   (println (first (shuffle gargamel-quotes)))
   (System/exit 0))

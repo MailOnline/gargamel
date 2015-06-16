@@ -23,16 +23,24 @@
   (map #(s/replace % #"[^\d\.]" "") [x y]))
 
 
+(defn include-module? [regex [module-key _]]
+  (when (and module-key regex (re-find regex (name module-key)))
+    true))
+
 (defn changelog
-  ([project-name project-dir from to]
-   (changelog project-name project-dir from to (atom #{})))
-  ([project-name project-dir from to mods-seen]
+  ([project-name project-dir from to {:keys [include-regex mods-seen] 
+                                      :or {mods-seen (atom #{})}
+                                      :as opts}]
+   (println (format "Generating changelog for project %s between %s and %s"
+                     project-name
+                     from to))
    (swap! mods-seen conj project-name)
    (let [deps-before (:dependencies (config project-dir :rev from))
          deps-after (:dependencies (config project-dir :rev to))
          deps-changed (data/diff deps-before deps-after)
          mods-changed (merge-with merge-versions (first deps-changed) (second deps-changed))
          mods-pending (remove #(@mods-seen (key %)) mods-changed)
+         mods-pending (filter (partial include-module? include-regex) mods-pending)
          changes (grg/changelog from to {:dir project-dir :name (name project-name)
                                          :remote-url (git/remote-url project-dir)})]
      (if mods-changed
@@ -43,14 +51,12 @@
                          :let [repo (lookup-module project-dir mod-name)
                                mod-dir (git/checkout-project mod-name repo)]]
                      (binding [grg/proj-name mod-name]
-                       (changelog mod-name mod-dir mod-old-version mod-new-version mods-seen))))))
+                       (changelog mod-name mod-dir mod-old-version mod-new-version opts))))))
        changes))))
 
-(defn bower-changelog [source-path target-path from to]
+(defn bower-changelog [source-path target-path from to & opts]
   (binding [grg/proj-name (:name (config source-path))
             grg/target-path target-path]
-    (println (format "Generating changelog for project %s between %s and %s"
-                     grg/proj-name
-                     from to))
-    (grg/create-changelog (grg/enrich-changelog (changelog grg/proj-name source-path from to) source-path)
-                               from to source-path)))
+    (grg/create-changelog (grg/enrich-changelog (changelog grg/proj-name source-path from to opts) 
+                                                source-path)
+                          from to source-path)))
