@@ -125,7 +125,7 @@
   You have to provide the first parameter (from ref) second parameter is
   optional. In case it is not provided changelog will be generated between
   from and HEAD."
-  [project from & to]
-  (let [proj-name (:name project)
+  [project from & [to proj-name]]
+  (let [proj-name (or proj-name (:name project))
         target-path (:target-path project)]
-    (gargamel-changelog proj-name target-path nil from (first to))))
+    (gargamel-changelog proj-name target-path nil from to)))
